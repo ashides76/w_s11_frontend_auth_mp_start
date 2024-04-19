@@ -22,12 +22,13 @@ export default function AuthForm() {
     setPassword(event.target.value)
   }
 
-  const loginExistingUser = async (env) => {
+  const loginUser = async (env) => {
     env.preventDefault()
     try {
       const { data } = await axios.post('api/auth/login', { username, password })
       localStorage.setItem('token', data.token)
       navigate('/stars')
+      setMessage(data.message);
     } catch (err) {
       setError(err?.response?.message || "An error occured. Please try again!")
     }
@@ -41,7 +42,7 @@ export default function AuthForm() {
     }
     try {
       const { data } = await axios.post('api/auth/register', newUser)
-      console.log('Registration success:', data);
+      setMessage(data.message);
     } catch (err) {
       setError(err?.response?.message || "An error occured. Please try again!")
     }
@@ -49,10 +50,10 @@ export default function AuthForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (isLogin === 'Login') {
-      loginExistingUser(e)
-    } else {
+    if (!isLogin) {
       registerUser(e)
+    } else {
+      loginUser(e)
     }
   }
 
